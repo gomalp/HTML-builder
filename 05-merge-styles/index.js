@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { promises: fsp } = fs;
 const readline = require('readline');
+const { once } = require('node:events');
 
 const STYLES="styles";
 const RESULT_FOLDER="project-dist";
@@ -27,6 +28,8 @@ async function stylesMaker(pathStyles, fileResult){
                 rl.on('line', (line) => {
                     if(line != null)resultFile.write(line+"\n");
                 });
+                await once(rl, 'close');
+                rl.on('end', () => {rl.close()});
                 rl.on('error', function(err){
                     if(err.code == 'ENOENT'){
                         console.log("Файл не найден");
