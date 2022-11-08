@@ -9,16 +9,16 @@ const TEMPLATE_HTML="template.html";
 const RESULT_FOLDER="project-dist";
 const SRC_STYLES_FOLDER="styles";
 const ASSETS_FOLDER="assets"; 
-const SRC_TEGS_FOLDER="components"; 
 
-const pathSrcTegsFolder=path.join(__dirname,SRC_TEGS_FOLDER);
-const pathSrcStylesFolder=path.join(__dirname, SRC_STYLES_FOLDER);
+const pathSrcStyles=path.join(__dirname,SRC_STYLES_FOLDER);
+
+//const pathResultFolder=path.join(__dirname, SRC_STYLES_FOLDER);
 const pathResultFolder=path.join(__dirname, RESULT_FOLDER);
 const fileResultHtml=path.join(__dirname,RESULT_FOLDER,RESULT_HTML);
 const fileTemplateHtml=path.join(__dirname,TEMPLATE_HTML);
 
 
-async function htmlMaker(pathResultFolder, fileTemplateHtml,fileResultHtml,pathSrcTegsFolder){
+async function htmlMaker(pathResultFolder, fileTemplateHtml,fileResultHtml){
 
     try {
         let templateData="";
@@ -33,62 +33,19 @@ async function htmlMaker(pathResultFolder, fileTemplateHtml,fileResultHtml,pathS
                 templateData += chunk;
             }
         });
-        readStream.on('end', async function(){
+        readStream.on('end', function(){
             let tags=[];
-            let tagsCode=[];
-            let index="";
-            let start=templateData.indexOf("{{", 0);
-            let end=templateData.indexOf("}}", start+2);
-            //let item=templateData.indexOf("{{", pos);
-            index=templateData.slice(0, start);
-            while(start!=-1){
-                
-                tags.push({tag: templateData.slice(start+2, end),start: start+2,end: end});
-                start= templateData.indexOf("{{", end+2);
-                end=templateData.indexOf("}}", start+2);
-
+            let pos=0;
+            while(pos<templateData.length){
+                let start= templateData.indexOf("{{", pos);
+                let end=templateData.indexOf("}}", start+2);
+                tags.push(templateData.slice(start+2, end));
+                pos=end+2;
                 console.log(tags);
-                console.log(templateData.length);      
+                console.log(templateData.length);
+                console.log(templateData);
+                break;
             }
-                    // node 06-build-page
-
-            //let readStream=fs.createReadStream(pathSrcStylesFolder,{encoding:'utf-8'});
-            await (async () => {
-            const listFiles = await fsp.readdir(pathSrcTegsFolder,{withFileTypes: true});            
-            for (let i=0;i<listFiles.length;i++) {
-                let pathFileTag=path.join(pathSrcTegsFolder,listFiles[i].name);
-                let isHtml=path.extname(pathFileTag)==".html";
-                if(listFiles[i].isFile() && isHtml){
-                  console.log("pathFileTag   ",pathFileTag)
-                    let readFileTag=fs.createReadStream(pathFileTag,{encoding:'utf-8'}) 
-                    let templateDataTeg=0;
-                    let chunkTeg="";
-                    readFileTag.on('readable', function(){
-                      while ((chunkTeg=readFileTag.read()) != null) {
-                        templateDataTeg += chunkTeg;
-                      }
-                    });
-
-                    readFileTag.on('end', function(){
-                      tagsCode.push(templateDataTeg);
-                      console.log("---",templateDataTeg);
-                      
-                    });
-                    readFileTag.on('error', function(err){
-                      if(err.code == 'ENOENT'){
-                        console.log("Файл не найден");
-                      }else{
-                       console.error(err);
-                      }
-                    });
-                }  
-                console.log("########## 0 ",tagsCode[0]);
-                console.log("########## 1 ",tagsCode[1]);
-                console.log("########## 2 ",tagsCode[2]);
-         } })()
-
- 
-
 
         }); 
 
@@ -127,7 +84,7 @@ async function eraseDir(targetFolderPath){
     }
   }
 
-  htmlMaker(pathResultFolder, fileTemplateHtml,fileResultHtml,pathSrcTegsFolder);
+htmlMaker(pathResultFolder, fileTemplateHtml,fileResultHtml);
 
 /*
 
