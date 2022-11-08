@@ -11,8 +11,8 @@ const PATH=path.join(__dirname,"secret-folder");
             if(listFiles[i].isFile()){
                 let name=listFiles[i].name;
                 let stat = await fsp.stat(path.join(PATH,listFiles[i].name));
-                console.log(name.slice(0,name.indexOf('.'))," - ",
-                            path.extname(name).slice(1)," - ",
+                console.log(path.parse(name).name," - ",
+                            path.extname(name).replace('.', '')," - ",
                             (stat.size/1024).toFixed(3),"kb")
             }
         }

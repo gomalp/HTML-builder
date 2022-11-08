@@ -11,9 +11,8 @@ const rl = readline.createInterface({
 
 console.log('Введите текст:');
 rl.on('line', (line) => {
-    console.log('Введите текст:');
     if(line=='exit') exit();
-    writeStream.write(line);
+    writeStream.write(line+"\n");
 });
   
 process.on('SIGINT', () => {
